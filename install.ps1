@@ -6,6 +6,13 @@ $lineSeparator = "----------------------------------"
 Write-Host "Starting Installation" -ForegroundColor Yellow -BackgroundColor Black
 Write-Host $lineSeparator
 
+Write-Host "Checking priviledges"
+$currentPrincipal = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
+if (!($currentPrincipal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator))) {
+    Write-Host "This script must be run with administrator priviledges." -ForegroundColor Red -BackgroundColor Black
+    exit
+}
+
 $aacsKeyDbArchiveName = "aacs_keydb.tar.bz2"
 $aacsKeyDbFolder = "C:\ProgramData\aacs"
 $keyDbFileName = "keydb.cfg"
@@ -33,7 +40,7 @@ $libaacsFileName = "libaacs.dll"
 
 $WebClient.DownloadFile("https://vlc-bluray.whoknowsmy.name/files/win64/libaacs.dll", "$downloadFolderPath\$libaacsFileName")
 
-Move-Item -Path $downloadFolderPath\$libaacsFileName -Destination 'C:\Program Files\VideoLAN\VLC\$libaacsFileName'
+Move-Item -Path "$downloadFolderPath\$libaacsFileName" -Destination "C:\Program Files\VideoLAN\VLC\$libaacsFileName" -Force
 
 Write-Host $lineSeparator
 if ($Error) {
